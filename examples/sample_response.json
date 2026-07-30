@@ -1,0 +1,14 @@
+{
+  "category": "delivery",
+  "priority": "high",
+  "entities": {
+    "order_id": "ORD-10482",
+    "email": "customer@example.com",
+    "phone": null,
+    "amount": null,
+    "date": null
+  },
+  "keywords": ["order", "arrived"],
+  "confidence": 0.7116,
+  "needs_review": false
+}

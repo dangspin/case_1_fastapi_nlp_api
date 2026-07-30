@@ -1,0 +1,31 @@
+text,category
+"I was charged twice for my subscription.",billing
+"The invoice total is incorrect.",billing
+"My payment was declined at checkout.",billing
+"Please explain this unexpected charge on my card.",billing
+"I need a refund for the duplicate payment.",billing
+"The billing address on my invoice is wrong.",billing
+"Why did my monthly plan price increase?",billing
+"I cannot update my credit card for payment.",billing
+"My receipt has not arrived by email.",billing
+"There is a problem with the amount charged.",billing
+"My order ORD-10001 has not arrived.",delivery
+"Where is my package? The delivery is late.",delivery
+"Can you share the tracking status for my shipment?",delivery
+"The courier delivered my order to the wrong address.",delivery
+"I need to change the delivery address.",delivery
+"My parcel arrived damaged.",delivery
+"When will my order be delivered?",delivery
+"The tracking link says delivered but I do not have the package.",delivery
+"Please help with a missing shipment.",delivery
+"Can you confirm the shipping date for order ORD-10010?",delivery
+"I cannot access my account after resetting the password.",technical
+"The app shows an error when I try to log in.",technical
+"The website is not loading on my phone.",technical
+"My dashboard is broken after the latest update.",technical
+"The upload failed and I cannot continue.",technical
+"Two-factor authentication is not working.",technical
+"The checkout page freezes before payment.",technical
+"I am blocked from using the reporting feature.",technical
+"The integration returns a server error.",technical
+"Please help me troubleshoot the API connection.",technical
