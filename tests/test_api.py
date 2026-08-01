@@ -65,6 +65,18 @@ def test_openapi_exposes_analyze_endpoint() -> None:
     assert "/health" in schema["paths"]
 
 
+def test_vite_origin_is_allowed_by_cors() -> None:
+    response = client.options(
+        "/analyze",
+        headers={
+            "Origin": "http://localhost:5173",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
+
+
 def test_analyze_returns_stable_workflow_response() -> None:
     response = client.post(
         "/analyze",

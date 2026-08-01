@@ -139,6 +139,41 @@ curl -X POST http://127.0.0.1:8000/analyze \
   -d '{"text":"My order ORD-10482 has not arrived. Please contact me at customer@example.com."}'
 ```
 
+## Vue Frontend
+
+The project also includes a beginner-friendly Vue 3 frontend. It calls the existing FastAPI endpoint and displays the category, priority, confidence, extracted entities, and keywords.
+
+The frontend is intentionally small: one `App.vue`, one API helper, and one stylesheet. It uses Vue fundamentals such as `ref`, `computed`, `v-model`, `v-if`, `v-for`, and event handlers before introducing routers, state libraries, or TypeScript.
+
+Start the backend in one terminal:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Start Vue in a second terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser. The frontend uses `fetch` to send a `POST /analyze` request to `http://127.0.0.1:8000`.
+
+For local development, FastAPI allows the Vite origins `localhost:5173` and `127.0.0.1:5173` through CORS. The backend response schema is unchanged.
+
+### Vue Learning Map
+
+| Vue concept | Where it appears | What it does |
+| --- | --- | --- |
+| `ref()` | `frontend/src/App.vue` | Stores reactive message, loading, error, and result state |
+| `v-model` | Message textarea | Keeps the textarea and JavaScript value synchronized |
+| `@click` | Analyze and sample buttons | Runs actions when the user clicks |
+| `v-if` | Loading, error, empty, and result areas | Shows the correct UI state |
+| `v-for` | Entity and keyword lists | Renders repeated API data |
+| `fetch()` | `frontend/src/api.js` | Sends the browser request to FastAPI |
+
 ## Supporting Visual
 
 The keyword chart is a small supporting view of the synthetic training examples. It is not a production analytics dashboard.
@@ -186,6 +221,14 @@ case_1_fastapi_nlp_api/
 │   └── keyword_summary.png
 ├── portfolio/
 │   └── cover.png
+├── frontend/
+│   ├── src/
+│   │   ├── App.vue
+│   │   ├── api.js
+│   │   └── style.css
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
 ├── scripts/
 │   └── train_model.py
 ├── tests/

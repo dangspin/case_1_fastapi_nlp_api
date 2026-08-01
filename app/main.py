@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from .classifier import load_classifier, predict_category
 from .extractor import extract_entities
@@ -27,6 +28,17 @@ app = FastAPI(
     title="Customer Support Ticket Intelligence API",
     description="A lightweight hybrid NLP service for ticket routing and field extraction.",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
 
@@ -58,4 +70,3 @@ def analyze(request: AnalyzeRequest) -> AnalyzeResponse:
         confidence=round(confidence, 4),
         needs_review=needs_review(confidence),
     )
-
