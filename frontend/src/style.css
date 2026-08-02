@@ -73,6 +73,7 @@ textarea:disabled {
 
 .brand-lockup,
 .api-status,
+.input-meta,
 .input-footer,
 .panel-heading,
 .section-heading,
@@ -268,6 +269,12 @@ h4 {
   margin-top: 16px;
 }
 
+.input-meta {
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 10px;
+}
+
 .helper-text,
 .card-caption,
 .flow-step span,
@@ -275,6 +282,20 @@ h4 {
 .empty-state {
   color: var(--subtle);
   font-size: 0.75rem;
+}
+
+.character-count {
+  color: var(--subtle);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.character-count--warning {
+  color: var(--orange);
+}
+
+.character-count--error {
+  color: var(--red);
 }
 
 .primary-button {
@@ -309,6 +330,12 @@ h4 {
 .error-message {
   margin: 14px 0 0;
   color: var(--red);
+  font-size: 0.8rem;
+}
+
+.validation-message {
+  margin: 10px 0 0;
+  color: var(--orange);
   font-size: 0.8rem;
 }
 
@@ -638,6 +665,7 @@ h4 {
 @media (max-width: 520px) {
   .topbar,
   .page-footer,
+  .input-meta,
   .input-footer,
   .section-heading {
     align-items: flex-start;

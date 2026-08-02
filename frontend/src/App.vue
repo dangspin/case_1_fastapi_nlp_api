@@ -12,6 +12,21 @@ const result = ref(null)
 const isLoading = ref(false)
 const errorMessage = ref('')
 const apiStatus = ref('checking')
+const MAX_MESSAGE_LENGTH = 5000
+
+const messageLength = computed(() => message.value.length)
+
+const validationMessage = computed(() => {
+  if (!message.value.trim()) {
+    return 'Please enter a customer message first.'
+  }
+
+  if (messageLength.value > MAX_MESSAGE_LENGTH) {
+    return `Message is too long. Please keep it to ${MAX_MESSAGE_LENGTH} characters or fewer.`
+  }
+
+  return ''
+})
 
 const apiStatusText = computed(() => {
   const labels = {
@@ -30,13 +45,12 @@ function loadSample() {
 }
 
 async function submitAnalysis() {
-  const cleanedMessage = message.value.trim()
-
-  if (!cleanedMessage) {
-    errorMessage.value = 'Please enter a customer message first.'
+  if (validationMessage.value) {
     result.value = null
     return
   }
+
+  const cleanedMessage = message.value.trim()
 
   isLoading.value = true
   errorMessage.value = ''
@@ -103,6 +117,7 @@ watch(message, () => {
           v-model="message"
           :is-loading="isLoading"
           :error-message="errorMessage"
+          :validation-message="validationMessage"
           @submit="submitAnalysis"
           @load-sample="loadSample"
         />
