@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 import EntityList from './EntityList.vue'
+import SummaryCard from './SummaryCard.vue'
+import ConfidenceMeter from './ConfidenceMeter.vue'
 
 const props = defineProps({
   result: {
@@ -23,25 +25,24 @@ const confidencePercent = computed(() => Math.round(props.result.confidence * 10
     </div>
 
     <div class="summary-grid">
-      <div class="summary-card">
-        <span class="card-label">Category</span>
-        <strong class="category-value">{{ result.category }}</strong>
-        <span class="card-caption">ML classification</span>
-      </div>
-      <div class="summary-card">
-        <span class="card-label">Priority</span>
-        <strong class="priority-badge" :class="`priority-badge--${result.priority}`">
-          {{ result.priority }}
-        </strong>
-        <span class="card-caption">Rule-based routing</span>
-      </div>
-      <div class="summary-card">
-        <span class="card-label">Review status</span>
-        <strong :class="['review-value', { 'review-value--warning': result.needs_review }]">
-          {{ result.needs_review ? 'Needs review' : 'Ready to route' }}
-        </strong>
-        <span class="card-caption">Confidence threshold: 70%</span>
-      </div>
+      <SummaryCard
+        label="Category"
+        :value="result.category"
+        caption="ML classification"
+        variant="category"
+      />
+      <SummaryCard
+        label="Priority"
+        :value="result.priority"
+        caption="Rule-based routing"
+        :variant="`priority-${result.priority}`"
+      />
+      <SummaryCard
+        label="Review status"
+        :value="result.needs_review ? 'Needs review' : 'Ready to route'"
+        caption="Confidence threshold: 70%"
+        :variant="result.needs_review ? 'review-warning' : 'review'"
+      />
     </div>
 
     <div class="details-grid">
@@ -59,15 +60,7 @@ const confidencePercent = computed(() => Math.round(props.result.confidence * 10
           <span v-if="result.keywords.length === 0" class="empty-state">No keywords found.</span>
         </div>
 
-        <div class="confidence-meter">
-          <div class="meter-heading">
-            <span>Model confidence</span>
-            <strong>{{ confidencePercent }}%</strong>
-          </div>
-          <div class="meter-track">
-            <div class="meter-fill" :style="{ width: `${confidencePercent}%` }"></div>
-          </div>
-        </div>
+        <ConfidenceMeter :percent="confidencePercent" />
       </div>
     </div>
   </section>
