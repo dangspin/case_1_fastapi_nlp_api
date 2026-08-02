@@ -123,6 +123,27 @@ textarea:disabled {
   font-size: 0.8rem;
 }
 
+.api-status--checking .status-dot {
+  background: var(--orange);
+  box-shadow: 0 0 14px rgba(255, 185, 92, 0.8);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.api-status--connected .status-dot {
+  background: var(--teal);
+  box-shadow: 0 0 14px rgba(50, 207, 185, 0.8);
+}
+
+.api-status--degraded .status-dot {
+  background: var(--orange);
+  box-shadow: 0 0 14px rgba(255, 185, 92, 0.8);
+}
+
+.api-status--offline .status-dot {
+  background: var(--red);
+  box-shadow: 0 0 14px rgba(255, 129, 125, 0.8);
+}
+
 .status-dot {
   width: 8px;
   height: 8px;
@@ -580,6 +601,12 @@ h4 {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
   }
 }
 

@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import { analyzeMessage } from './api'
+import { computed, onMounted, ref, watch } from 'vue'
+import { analyzeMessage, checkHealth } from './api'
 import MessageInput from './components/MessageInput.vue'
 import ResultSummary from './components/ResultSummary.vue'
 
@@ -11,6 +11,18 @@ const message = ref(SAMPLE_MESSAGE)
 const result = ref(null)
 const isLoading = ref(false)
 const errorMessage = ref('')
+const apiStatus = ref('checking')
+
+const apiStatusText = computed(() => {
+  const labels = {
+    checking: 'Checking FastAPI...',
+    connected: 'FastAPI connected locally',
+    degraded: 'FastAPI model unavailable',
+    offline: 'FastAPI offline',
+  }
+
+  return labels[apiStatus.value]
+})
 
 function loadSample() {
   message.value = SAMPLE_MESSAGE
@@ -38,6 +50,27 @@ async function submitAnalysis() {
     isLoading.value = false
   }
 }
+
+async function checkApiHealth() {
+  apiStatus.value = 'checking'
+
+  try {
+    const health = await checkHealth()
+    apiStatus.value = health.model_loaded ? 'connected' : 'degraded'
+  } catch {
+    apiStatus.value = 'offline'
+  }
+}
+
+onMounted(() => {
+  checkApiHealth()
+})
+
+watch(message, () => {
+  if (errorMessage.value) {
+    errorMessage.value = ''
+  }
+})
 </script>
 
 <template>
@@ -50,9 +83,9 @@ async function submitAnalysis() {
           <h1>Ticket Intelligence</h1>
         </div>
       </div>
-      <div class="api-status">
+      <div class="api-status" :class="`api-status--${apiStatus}`">
         <span class="status-dot"></span>
-        <span>FastAPI connected locally</span>
+        <span>{{ apiStatusText }}</span>
       </div>
     </header>
 
