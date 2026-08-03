@@ -143,7 +143,7 @@ curl -X POST http://127.0.0.1:8000/analyze \
 
 The project also includes a beginner-friendly Vue 3 frontend. It calls the existing FastAPI endpoint and displays the category, priority, confidence, extracted entities, and keywords.
 
-The frontend is intentionally small: one `App.vue`, one API helper, and one stylesheet. It uses Vue fundamentals such as `ref`, `computed`, `v-model`, `v-if`, `v-for`, and event handlers before introducing routers, state libraries, or TypeScript.
+The frontend is intentionally small: one page component, a few focused child components, one API helper, and one stylesheet. It uses Vue fundamentals such as `ref`, `computed`, `v-model`, `v-if`, `v-for`, and event handlers before introducing routers, state libraries, or TypeScript.
 
 Start the backend in one terminal:
 
@@ -159,7 +159,17 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser. The frontend uses `fetch` to send a `POST /analyze` request to `http://127.0.0.1:8000`.
+Open `http://localhost:5173` in your browser. The frontend uses `fetch` to send a `POST /analyze` request to the FastAPI service.
+
+The default API URL is `http://127.0.0.1:8000`. To point the frontend at another local or hosted backend, copy the example environment file and edit the value:
+
+```bash
+cp .env.example .env
+```
+
+Then set `VITE_API_BASE_URL` in `frontend/.env` and restart the Vite dev server. The `.env` file is local-only and is ignored by Git.
+
+The frontend also applies an 8-second request timeout. When the backend is offline or times out, the interface shows a clear error and exposes a `Retry` action in the API status indicator.
 
 For local development, FastAPI allows the Vite origins `localhost:5173` and `127.0.0.1:5173` through CORS. The backend response schema is unchanged.
 
@@ -173,6 +183,42 @@ For local development, FastAPI allows the Vite origins `localhost:5173` and `127
 | `v-if` | Loading, error, empty, and result areas | Shows the correct UI state |
 | `v-for` | Entity and keyword lists | Renders repeated API data |
 | `fetch()` | `frontend/src/api.js` | Sends the browser request to FastAPI |
+| `defineProps()` | `MessageInput.vue`, `ResultSummary.vue` | Receives data from the parent component |
+| `defineEmits()` | `MessageInput.vue` | Sends user actions back to the parent |
+| Reusable components | `SummaryCard.vue`, `ConfidenceMeter.vue` | Keeps repeated UI pieces small and consistent |
+| `onMounted()` | `frontend/src/App.vue` | Runs the FastAPI health check after the page appears |
+| `watch()` | `frontend/src/App.vue` | Clears an old error when the user edits the message |
+| `computed()` | `frontend/src/App.vue` | Derives validation state and keeps it synchronized |
+| Form validation | `App.vue` + `MessageInput.vue` | Prevents invalid requests before the API call |
+| `import.meta.env` | `frontend/src/api.js` | Reads the API URL from Vite environment configuration |
+| `AbortController` | `frontend/src/api.js` | Stops a request that has exceeded the timeout |
+| Retry interaction | `frontend/src/App.vue` | Lets the user check the backend again after a network failure |
+
+### Frontend and Backend Validation
+
+The frontend checks for blank messages and messages over 5,000 characters so users receive immediate feedback. FastAPI validates the same boundary on the server because browser-side checks improve the experience but cannot be trusted as the final safety boundary.
+
+### API Configuration and Network States
+
+The API helper has one request path for both health checks and message analysis. It converts low-level browser failures into messages a user can understand:
+
+```text
+FastAPI available → request succeeds
+FastAPI unavailable → offline status + clear error
+Request takes too long → timeout message + Retry action
+```
+
+This is a small but important production habit: a frontend should explain what the user can do next when a dependency is unavailable.
+
+### Lifecycle and Watchers
+
+The top-right API indicator is connected to the real backend. When Vue mounts the page, `onMounted()` calls `GET /health`:
+
+```text
+Page mounted → health check → connected / degraded / offline status
+```
+
+The `watch(message, ...)` callback observes the textarea value. If the user changes the message after a validation error, the old error is cleared automatically. This keeps UI feedback close to the user action without putting that behavior inside the input component.
 
 ## Supporting Visual
 
@@ -225,8 +271,15 @@ case_1_fastapi_nlp_api/
 │   ├── src/
 │   │   ├── App.vue
 │   │   ├── api.js
-│   │   └── style.css
+│   │   ├── style.css
+│   │   └── components/
+│   │       ├── MessageInput.vue
+│   │       ├── EntityList.vue
+│   │       ├── ResultSummary.vue
+│   │       ├── SummaryCard.vue
+│   │       └── ConfidenceMeter.vue
 │   ├── index.html
+│   ├── .env.example
 │   ├── package.json
 │   └── vite.config.js
 ├── scripts/

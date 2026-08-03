@@ -58,6 +58,10 @@ async function submitAnalysis() {
   try {
     result.value = await analyzeMessage(cleanedMessage)
   } catch (error) {
+    if (error.code === 'NETWORK_ERROR' || error.code === 'TIMEOUT') {
+      apiStatus.value = 'offline'
+    }
+
     errorMessage.value = error.message || 'The API request could not be completed.'
     result.value = null
   } finally {
@@ -99,7 +103,15 @@ watch(message, () => {
       </div>
       <div class="api-status" :class="`api-status--${apiStatus}`">
         <span class="status-dot"></span>
-        <span>{{ apiStatusText }}</span>
+        <span aria-live="polite">{{ apiStatusText }}</span>
+        <button
+          v-if="apiStatus === 'offline' || apiStatus === 'degraded'"
+          class="status-retry"
+          type="button"
+          @click="checkApiHealth"
+        >
+          Retry
+        </button>
       </div>
     </header>
 

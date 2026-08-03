@@ -124,6 +124,19 @@ textarea:disabled {
   font-size: 0.8rem;
 }
 
+.status-retry {
+  padding: 0;
+  border: 0;
+  color: var(--cyan);
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.status-retry:hover {
+  color: var(--text);
+}
+
 .api-status--checking .status-dot {
   background: var(--orange);
   box-shadow: 0 0 14px rgba(255, 185, 92, 0.8);
@@ -642,10 +655,6 @@ h4 {
   .page-content,
   .page-footer {
     width: min(100% - 32px, 680px);
-  }
-
-  .api-status {
-    display: none;
   }
 
   .page-content {
