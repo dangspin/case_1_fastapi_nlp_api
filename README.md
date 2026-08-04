@@ -186,13 +186,14 @@ For local development, FastAPI allows the Vite origins `localhost:5173` and `127
 | `defineProps()` | `MessageInput.vue`, `ResultSummary.vue` | Receives data from the parent component |
 | `defineEmits()` | `MessageInput.vue` | Sends user actions back to the parent |
 | Reusable components | `SummaryCard.vue`, `ConfidenceMeter.vue` | Keeps repeated UI pieces small and consistent |
-| `onMounted()` | `frontend/src/App.vue` | Runs the FastAPI health check after the page appears |
+| `onMounted()` | `frontend/src/composables/useApiHealth.js` | Runs the FastAPI health check after the page appears |
 | `watch()` | `frontend/src/App.vue` | Clears an old error when the user edits the message |
 | `computed()` | `frontend/src/App.vue` | Derives validation state and keeps it synchronized |
 | Form validation | `App.vue` + `MessageInput.vue` | Prevents invalid requests before the API call |
 | `import.meta.env` | `frontend/src/api.js` | Reads the API URL from Vite environment configuration |
 | `AbortController` | `frontend/src/api.js` | Stops a request that has exceeded the timeout |
 | Retry interaction | `frontend/src/App.vue` | Lets the user check the backend again after a network failure |
+| Composables | `frontend/src/composables/useApiHealth.js` | Reuses API status state and health-check behavior |
 
 ### Frontend and Backend Validation
 
@@ -209,6 +210,10 @@ Request takes too long → timeout message + Retry action
 ```
 
 This is a small but important production habit: a frontend should explain what the user can do next when a dependency is unavailable.
+
+### Composables
+
+`useApiHealth()` packages the API status, status label, retry rule, health check, and offline transition into one reusable unit. `App.vue` consumes that unit instead of owning every implementation detail. If a future page needs the same FastAPI connection indicator, it can call the composable again.
 
 ### Lifecycle and Watchers
 
@@ -272,6 +277,8 @@ case_1_fastapi_nlp_api/
 │   │   ├── App.vue
 │   │   ├── api.js
 │   │   ├── style.css
+│   │   ├── composables/
+│   │   │   └── useApiHealth.js
 │   │   └── components/
 │   │       ├── MessageInput.vue
 │   │       ├── EntityList.vue

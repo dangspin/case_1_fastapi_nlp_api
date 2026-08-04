@@ -1,6 +1,7 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
-import { analyzeMessage, checkHealth } from './api'
+import { computed, ref, watch } from 'vue'
+import { analyzeMessage } from './api'
+import { useApiHealth } from './composables/useApiHealth'
 import MessageInput from './components/MessageInput.vue'
 import ResultSummary from './components/ResultSummary.vue'
 
@@ -11,8 +12,9 @@ const message = ref(SAMPLE_MESSAGE)
 const result = ref(null)
 const isLoading = ref(false)
 const errorMessage = ref('')
-const apiStatus = ref('checking')
 const MAX_MESSAGE_LENGTH = 5000
+
+const { apiStatus, apiStatusText, canRetry, checkApiHealth, markOffline } = useApiHealth()
 
 const messageLength = computed(() => message.value.length)
 
@@ -26,17 +28,6 @@ const validationMessage = computed(() => {
   }
 
   return ''
-})
-
-const apiStatusText = computed(() => {
-  const labels = {
-    checking: 'Checking FastAPI...',
-    connected: 'FastAPI connected locally',
-    degraded: 'FastAPI model unavailable',
-    offline: 'FastAPI offline',
-  }
-
-  return labels[apiStatus.value]
 })
 
 function loadSample() {
@@ -59,7 +50,7 @@ async function submitAnalysis() {
     result.value = await analyzeMessage(cleanedMessage)
   } catch (error) {
     if (error.code === 'NETWORK_ERROR' || error.code === 'TIMEOUT') {
-      apiStatus.value = 'offline'
+      markOffline()
     }
 
     errorMessage.value = error.message || 'The API request could not be completed.'
@@ -68,21 +59,6 @@ async function submitAnalysis() {
     isLoading.value = false
   }
 }
-
-async function checkApiHealth() {
-  apiStatus.value = 'checking'
-
-  try {
-    const health = await checkHealth()
-    apiStatus.value = health.model_loaded ? 'connected' : 'degraded'
-  } catch {
-    apiStatus.value = 'offline'
-  }
-}
-
-onMounted(() => {
-  checkApiHealth()
-})
 
 watch(message, () => {
   if (errorMessage.value) {
@@ -105,7 +81,7 @@ watch(message, () => {
         <span class="status-dot"></span>
         <span aria-live="polite">{{ apiStatusText }}</span>
         <button
-          v-if="apiStatus === 'offline' || apiStatus === 'degraded'"
+          v-if="canRetry"
           class="status-retry"
           type="button"
           @click="checkApiHealth"
